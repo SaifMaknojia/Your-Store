@@ -12,6 +12,27 @@ const config = {
   measurementId: 'G-ZY4RGXPVZW',
 };
 
+// creating api request to store user info directly to firebase
+export const createUserProfileDocument = async (userAuth, additionalData) => {
+  if (!userAuth) return;
+  const userRef = firestore.doc(`users/${userAuth.uid}`);
+  const snapShot = await userRef.get();
+  console.log(userAuth);
+  console.log(snapShot);
+
+  if (!snapShot.exists) {
+    const { displayName, email } = userAuth;
+    const createdAt = new Date();
+
+    try {
+      await userRef.set({ displayName, email, createdAt, ...additionalData });
+    } catch (error) {
+      console.log('error creating user', error.message);
+    }
+  }
+  return userRef;
+};
+
 //linking our firbase variable(line 1) with google firebase || initialising firebase
 firebase.initializeApp(config);
 
