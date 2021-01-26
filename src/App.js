@@ -1,31 +1,45 @@
-import "./App.css";
-import HomePage from "./pages/homepage/HomePage";
-import { Route, Link, Switch } from "react-router-dom";
-import MenuItems from "./components/menuItem/MenuItems";
-import Shop from "./pages/shop/shop";
-import Header from "./components/header/Header";
-import SignInSignOut from "./pages/signInSignOut/SignInSignOut";
+import './App.css';
+import HomePage from './pages/homepage/HomePage';
+import { Route, Switch } from 'react-router-dom';
+import Shop from './pages/shop/shop';
+import Header from './components/header/Header';
+import SignInSignOut from './pages/signInSignOut/SignInSignOut';
+import { auth } from './firebase/firebaseUtils';
+import React, { Component } from 'react';
 
-const HatsPage = () => {
-  return (
-    <div>
-      <h1>Hats Page</h1>
-    </div>
-  );
-};
+class App extends Component {
+  constructor() {
+    super();
 
-function App() {
-  return (
-    <div>
-      <Header />
-      <Switch>
-        <Route exact path="/" component={HomePage} />
-        <Route path="/shop" component={Shop} />
-        <Route path="/signin" component={SignInSignOut} />
-        {/* <HomePage /> */}
-      </Switch>
-    </div>
-  );
+    this.state = {
+      currentUser: null,
+    };
+  }
+
+  unsubscribeFromAuth = null;
+
+  componentDidMount() {
+    auth.onAuthStateChanged((user) => {
+      this.setState({ currentUser: user });
+      console.log(user);
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeFromAuth();
+  }
+
+  render() {
+    return (
+      <div>
+        <Header currentUser={this.state.currentUser} />
+        <Switch>
+          <Route exact path="/" component={HomePage} />
+          <Route path="/shop" component={Shop} />
+          <Route path="/signin" component={SignInSignOut} />
+        </Switch>
+      </div>
+    );
+  }
 }
-
 export default App;
