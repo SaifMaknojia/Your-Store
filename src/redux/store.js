@@ -1,8 +1,7 @@
 import { createStore, applyMiddleware } from 'redux';
-import logger from 'react-logger';
-import rootReducer from './root-reducer';
+import logger from 'redux-logger';
 
-//can also be used directly inside function, but for scalable issue we created a const
+import rootReducer from './root-reducer';
 const middlewares = [logger];
 
 const store = createStore(rootReducer, applyMiddleware(...middlewares));
