@@ -2,7 +2,7 @@ import './App.css';
 import HomePage from './pages/homepage/HomePage';
 import { connect } from 'react-redux';
 import { setCurrentUser } from './redux/user/user.action';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import Shop from './pages/shop/shop';
 import Header from './components/header/Header';
 import SignInSignOut from './pages/signInSignOut/SignInSignOut';
@@ -22,7 +22,7 @@ class App extends Component {
         userRef.onSnapshot((snapShot) => {
           setCurrentUser({
             id: snapShot.id,
-            ...snapShot.data(),
+            ...snapShot.data()
           });
         });
       }
@@ -41,15 +41,24 @@ class App extends Component {
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route path="/shop" component={Shop} />
-          <Route path="/signin" component={SignInSignOut} />
+          <Route
+            exact path="/signin"
+            render={() =>
+              this.props.currentUser ? (<Redirect to="/" /> ): (<SignInSignOut />)
+            }
+          />
         </Switch>
       </div>
     );
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+const mapStateToProps = ({ user }) => ({
+  currentUser: user.currentUser
 });
 
-export default connect(null, mapDispatchToProps)(App);
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentUser: user => dispatch(setCurrentUser(user))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
